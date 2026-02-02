@@ -1,85 +1,127 @@
-import React, { useEffect, useState } from 'react';
-import Phaser from 'phaser';
+import React, { useEffect } from 'react';
 import useGameStore from '../store/gameStore';
+import { setupGameListeners } from '../utils/socket';
+import GamePhaseRenderer from '../components/GamePhaseRenderer';
 import CribbageBoard from '../components/CribbageBoard';
 import styles from './GameBoard.module.css';
 
 export default function GameBoard() {
-  const [phaserGame, setPhaserGame] = useState(null);
   const gameCode = useGameStore((s) => s.gameCode);
   const player = useGameStore((s) => s.player);
   const socket = useGameStore((s) => s.socket);
-  const gameState = useGameStore((s) => s.gameState);
-  const setGameState = useGameStore((s) => s.setGameState);
+  const gamePhase = useGameStore((s) => s.gamePhase);
+  const setGamePhase = useGameStore((s) => s.setGamePhase);
   const setToast = useGameStore((s) => s.setToast);
+  const setPlayerHand = useGameStore((s) => s.setPlayerHand);
+  const setP1Score = useGameStore((s) => s.setP1Score);
+  const setP2Score = useGameStore((s) => s.setP2Score);
+  const setP1PegPosition = useGameStore((s) => s.setP1PegPosition);
+  const setP2PegPosition = useGameStore((s) => s.setP2PegPosition);
+  const setCurrentTurn = useGameStore((s) => s.setCurrentTurn);
+  const setP1Nickname = useGameStore((s) => s.setP1Nickname);
+  const setP2Nickname = useGameStore((s) => s.setP2Nickname);
+  const setPlayedCards = useGameStore((s) => s.setPlayedCards);
+  const setCurrentTotal = useGameStore((s) => s.setCurrentTotal);
+  const setCribCards = useGameStore((s) => s.setCribCards);
 
   useEffect(() => {
     if (!socket) return;
 
-    socket.on('game_state', (state) => {
-      setGameState(state);
-    });
-
-    socket.on('card_played', (data) => {
-      setGameState(data.gameState);
-      if (data.score > 0) {
-        setToast(`Scored ${data.score} points!`, 'success');
-      }
-    });
-
-    socket.on('peg_moved', (data) => {
-      setGameState(data.gameState);
-    });
-
-    socket.on('peg_move_invalid', (validation) => {
-      setToast(validation.message, 'error');
-    });
-
-    socket.on('turn_changed', (data) => {
-      // Highlight whose turn it is
-    });
-
-    socket.on('game_finished', (data) => {
-      setToast(
-        data.winner === player.id 
-          ? 'You won! 🎉' 
-          : 'Opponent won!',
-        'info'
-      );
-    });
-
-    socket.on('error', (message) => {
-      setToast(message, 'error');
+    setupGameListeners(socket, {
+      onCardsDelt: (data) => {
+        setPlayerHand(data.playerHand || data.hand || []);
+        setP1Nickname(data.p1Nickname);
+        setP2Nickname(data.p2Nickname);
+        setGamePhase('discard');
+      },
+      onWaitingForDiscard: () => {
+        setGamePhase('discard');
+      },
+      onBothDiscarded: (data) => {
+        setPlayerHand(data.playerHand || data.hand || []);
+        setCribCards(data.cribCards || data.crib || []);
+        setGamePhase('pegging');
+      },
+      onPeggingStarted: () => {
+        setGamePhase('pegging');
+      },
+      onCardPlayed: (data) => {
+        setPlayedCards(data.playedCards || []);
+        setCurrentTotal(data.runningTotal || data.currentTotal || 0);
+        setCurrentTurn(data.nextTurn);
+        if (data.score > 0) {
+          setToast(`+${data.score} points!`, 'success');
+        }
+      },
+      onHandScored: (data) => {
+        const isP1 = data.playerUuid === player?.uuid;
+        if (isP1) setP1Score(data.score);
+        else setP2Score(data.score);
+        setP1PegPosition(data.p1PegPosition || 0);
+        setP2PegPosition(data.p2PegPosition || 0);
+        setToast(`+${data.score} points!`, 'success');
+      },
+      onCribScored: (data) => {
+        const isP1 = data.dealerUuid === player?.uuid;
+        if (isP1) setP1Score(data.score);
+        else setP2Score(data.score);
+        setP1PegPosition(data.p1PegPosition || 0);
+        setP2PegPosition(data.p2PegPosition || 0);
+        setToast(`Crib: +${data.score}`, 'success');
+      },
+      onGameFinished: (data) => {
+        setP1Score(data.p1Score);
+        setP2Score(data.p2Score);
+        setGamePhase('gameover');
+        setToast(
+          data.winner === player?.uuid ? 'You won! 🎉' : 'Opponent won!',
+          'info'
+        );
+      },
+      onError: (message) => {
+        setToast(message, 'error');
+      },
     });
 
     return () => {
-      socket.off('game_state');
+      socket.off('cards_dealt');
+      socket.off('waiting_for_discard');
+      socket.off('both_discarded');
+      socket.off('pegging_started');
       socket.off('card_played');
-      socket.off('peg_moved');
-      socket.off('turn_changed');
+      socket.off('hand_scored');
+      socket.off('crib_scored');
       socket.off('game_finished');
       socket.off('error');
     };
-  }, [socket, player, setGameState, setToast]);
+  }, [
+    socket,
+    player,
+    setGamePhase,
+    setPlayerHand,
+    setToast,
+    setP1Score,
+    setP2Score,
+    setP1PegPosition,
+    setP2PegPosition,
+    setCurrentTurn,
+    setP1Nickname,
+    setP2Nickname,
+    setPlayedCards,
+    setCurrentTotal,
+    setCribCards,
+  ]);
 
   return (
     <div className={styles.container}>
-      <div className={styles.gameCode}>
-        Code: <strong>{gameCode}</strong>
-      </div>
-      
-      <div className={styles.board}>
-        <CribbageBoard />
+      <div className={styles.header}>
+        <h1 className={styles.title}>🎴 Cribbage</h1>
+        <span className={styles.gameCode}>Code: {gameCode}</span>
       </div>
 
-      <div className={styles.info}>
-        <div className={styles.playerInfo}>
-          <h3>{player?.nickname}</h3>
-          <p>Score: {gameState?.p1Score || 0}</p>
-        </div>
-        <div className={styles.status}>
-          <p>Phase: {gameState?.phase || 'deal'}</p>
-        </div>
+      <div className={styles.gameArea}>
+        <CribbageBoard />
+        <GamePhaseRenderer />
       </div>
     </div>
   );

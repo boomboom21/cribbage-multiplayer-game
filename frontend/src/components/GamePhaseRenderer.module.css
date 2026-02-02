@@ -1,0 +1,11 @@
+.renderer {
+  width: 100%;
+  min-height: 200px;
+}
+
+.placeholder {
+  padding: 40px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 18px;
+}

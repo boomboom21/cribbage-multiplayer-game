@@ -1,57 +1,60 @@
-import React, { useEffect, useRef } from 'react';
-import Phaser from 'phaser';
+import React from 'react';
 import useGameStore from '../store/gameStore';
-import CribbageBoardScene from '../scenes/CribbageBoardScene';
+import PegTrack from './PegTrack';
+import styles from './CribbageBoard.module.css';
 
 export default function CribbageBoard() {
-  const gameRef = useRef(null);
-  const containerRef = useRef(null);
-  const gameCode = useGameStore((s) => s.gameCode);
-  const player = useGameStore((s) => s.player);
-  const socket = useGameStore((s) => s.socket);
-  const gameState = useGameStore((s) => s.gameState);
+  const p1Nickname = useGameStore((s) => s.p1Nickname);
+  const p2Nickname = useGameStore((s) => s.p2Nickname);
+  const p1Score = useGameStore((s) => s.p1Score);
+  const p2Score = useGameStore((s) => s.p2Score);
+  const p1PegPosition = useGameStore((s) => s.p1PegPosition);
+  const p2PegPosition = useGameStore((s) => s.p2PegPosition);
+  const gamePhase = useGameStore((s) => s.gamePhase);
 
-  useEffect(() => {
-    if (!containerRef.current) return;
+  return (
+    <div className={styles.boardContainer}>
+      <div className={styles.board}>
+        {/* Player 1 Track */}
+        <div className={styles.trackRow}>
+          <div className={styles.playerLabel}>
+            <div className={styles.name}>{p1Nickname || 'Player 1'}</div>
+            <div className={styles.score}>{p1Score}</div>
+          </div>
+          <PegTrack
+            pegPosition={p1PegPosition}
+            playerColor="#3b82f6"
+            playerName="P1"
+          />
+        </div>
 
-    // Create Phaser game
-    const config = {
-      type: Phaser.AUTO,
-      parent: containerRef.current,
-      width: 800,
-      height: 600,
-      scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-      },
-      physics: {
-        default: 'arcade',
-        arcade: {
-          debug: false,
-          gravity: { y: 0 },
-        },
-      },
-      scene: [CribbageBoardScene],
-    };
+        {/* Center divider */}
+        <div className={styles.divider}></div>
 
-    gameRef.current = new Phaser.Game(config);
+        {/* Player 2 Track */}
+        <div className={styles.trackRow}>
+          <div className={styles.playerLabel}>
+            <div className={styles.name}>{p2Nickname || 'Player 2'}</div>
+            <div className={styles.score}>{p2Score}</div>
+          </div>
+          <PegTrack
+            pegPosition={p2PegPosition}
+            playerColor="#ef4444"
+            playerName="P2"
+          />
+        </div>
+      </div>
 
-    return () => {
-      if (gameRef.current) {
-        gameRef.current.destroy(true);
-      }
-    };
-  }, []);
-
-  // Update scene with game state
-  useEffect(() => {
-    if (!gameRef.current || !gameState) return;
-
-    const scene = gameRef.current.scene.getScene(CribbageBoardScene.key);
-    if (scene) {
-      scene.updateGameState(gameState, player.id);
-    }
-  }, [gameState, player]);
-
-  return <div ref={containerRef} style={{ width: '100%', height: '100%' }} />;
+      {/* Phase indicator */}
+      <div className={styles.phaseIndicator}>
+        <span className={styles.phase}>
+          {gamePhase === 'dealing' && '🎴 Dealing...'}
+          {gamePhase === 'discard' && '♦️ Discard'}
+          {gamePhase === 'pegging' && '♠️ Pegging'}
+          {gamePhase === 'counting' && '🧮 Counting'}
+          {gamePhase === 'gameover' && '🏆 Game Over'}
+        </span>
+      </div>
+    </div>
+  );
 }

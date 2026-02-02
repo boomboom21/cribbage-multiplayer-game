@@ -1,0 +1,93 @@
+.boardContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background: #1a1a1a;
+  border-radius: 8px;
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: #2a2a2a;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.trackRow {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.playerLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 100px;
+  padding: 8px;
+  background: #1a1a1a;
+  border-radius: 6px;
+  border-left: 3px solid #f59e0b;
+}
+
+.name {
+  font-weight: bold;
+  color: #f3f4f6;
+  font-size: 14px;
+}
+
+.score {
+  font-size: 20px;
+  font-weight: bold;
+  color: #f59e0b;
+}
+
+.divider {
+  height: 2px;
+  background: #444;
+  margin: 10px 0;
+}
+
+.phaseIndicator {
+  text-align: center;
+  padding: 12px;
+  background: #2a2a2a;
+  border-radius: 6px;
+  border-top: 2px solid #f59e0b;
+}
+
+.phase {
+  color: #f59e0b;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .boardContainer {
+    padding: 12px;
+  }
+
+  .board {
+    padding: 12px;
+  }
+
+  .trackRow {
+    gap: 10px;
+  }
+
+  .playerLabel {
+    min-width: 80px;
+    padding: 6px;
+  }
+
+  .name {
+    font-size: 12px;
+  }
+
+  .score {
+    font-size: 18px;
+  }
+}

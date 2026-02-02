@@ -1,0 +1,78 @@
+.card {
+  width: 80px;
+  height: 120px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  user-select: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover:not(.disabled) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.card.selected {
+  border-color: #f59e0b;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+  background: #fffbf0;
+}
+
+.card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.rank {
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.suit {
+  font-size: 12px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.largeSuit {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 10px;
+  line-height: 1.2;
+  transform: rotate(180deg);
+}
+
+.value {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: 8px;
+  color: #9ca3af;
+  opacity: 0.7;
+}

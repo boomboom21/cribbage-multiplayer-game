@@ -1,0 +1,99 @@
+.container {
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  border-radius: 8px;
+  color: #f3f4f6;
+  text-align: center;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.trophy {
+  font-size: 64px;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: 36px;
+  color: #f59e0b;
+}
+
+.finalScores {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 2px solid #f59e0b;
+  width: 100%;
+  max-width: 400px;
+}
+
+.scoreCard {
+  flex: 1;
+}
+
+.scoreCard h2 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #9ca3af;
+  font-weight: normal;
+}
+
+.score {
+  font-size: 32px;
+  font-weight: bold;
+  color: #f59e0b;
+}
+
+.divider {
+  color: #666;
+  font-size: 24px;
+}
+
+.winner {
+  padding: 12px 24px;
+  background: #f59e0b;
+  border-radius: 6px;
+}
+
+.winner p {
+  margin: 0;
+  color: #1a1a1a;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.button {
+  padding: 12px 32px;
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  background: #16a34a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
