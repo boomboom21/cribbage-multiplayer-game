@@ -6,6 +6,18 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://cribbage-backend:3002',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
+      },
+      '/socket.io': {
+        target: 'http://cribbage-backend:3002',
+        changeOrigin: true,
+        ws: true,
+      },
+    },
   },
   build: {
     outDir: 'dist',

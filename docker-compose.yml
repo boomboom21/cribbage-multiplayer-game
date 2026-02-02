@@ -36,8 +36,6 @@ services:
   frontend:
     build: ./frontend
     container_name: cribbage-frontend
-    environment:
-      VITE_API_URL: http://cribbage-backend:3002
     ports:
       - "5174:5173"
     volumes:

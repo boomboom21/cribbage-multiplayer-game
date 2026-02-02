@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+// Use relative API URLs - Vite dev proxy will forward to backend
+const API_URL = '/api';
 
 const client = axios.create({
   baseURL: API_URL,
@@ -9,33 +10,33 @@ const client = axios.create({
 
 // Players
 export async function createPlayer(nickname) {
-  const res = await client.post('/api/players', { nickname });
+  const res = await client.post('/players', { nickname });
   return res.data;
 }
 
 export async function getPlayerStats(uuid) {
-  const res = await client.get(`/api/players/${uuid}/stats`);
+  const res = await client.get(`/players/${uuid}/stats`);
   return res.data;
 }
 
 // Games
 export async function createGame(playerId) {
-  const res = await client.post('/api/games', { playerId });
+  const res = await client.post('/games', { playerId });
   return res.data;
 }
 
 export async function joinGame(gameCode, playerId) {
-  const res = await client.post(`/api/games/${gameCode}/join`, { playerId });
+  const res = await client.post(`/games/${gameCode}/join`, { playerId });
   return res.data;
 }
 
 export async function getGame(gameCode) {
-  const res = await client.get(`/api/games/${gameCode}`);
+  const res = await client.get(`/games/${gameCode}`);
   return res.data;
 }
 
 export async function checkHealth() {
-  const res = await client.get('/api/health');
+  const res = await client.get('/health');
   return res.data;
 }
 

@@ -1,9 +1,9 @@
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002';
-
+// Socket.IO will connect to same origin (current page) which is proxied by Vite to backend
 export function createSocket() {
-  return io(SOCKET_URL, {
+  return io(undefined, {
+    path: '/socket.io',
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000,
