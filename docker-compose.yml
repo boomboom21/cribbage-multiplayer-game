@@ -8,8 +8,6 @@ services:
       POSTGRES_USER: cribbage
       POSTGRES_PASSWORD: cribbage_dev_password
       POSTGRES_DB: cribbage_game
-    ports:
-      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./db/migrations:/docker-entrypoint-initdb.d
@@ -26,9 +24,7 @@ services:
       NODE_ENV: development
       DATABASE_URL: postgres://cribbage:cribbage_dev_password@postgres:5432/cribbage_game
       PORT: 3002
-      FRONTEND_URL: http://localhost:5174
-    ports:
-      - "3002:3002"
+      FRONTEND_URL: http://cribbage-frontend:5173
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -41,11 +37,9 @@ services:
     build: ./frontend
     container_name: cribbage-frontend
     environment:
-      VITE_API_URL: http://localhost:3002
+      VITE_API_URL: http://cribbage-backend:3002
     ports:
       - "5174:5173"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     volumes:
       - ./frontend:/app
       - /app/node_modules
