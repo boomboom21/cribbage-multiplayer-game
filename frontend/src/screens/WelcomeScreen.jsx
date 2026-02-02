@@ -19,8 +19,7 @@ export default function WelcomeScreen() {
 
     setLoading(true);
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3002';
-      const res = await axios.post(`${apiUrl}/api/players`, {
+      const res = await axios.post('/api/players', {
         nickname: nickname.trim(),
       });
       setPlayer(res.data);
@@ -28,7 +27,7 @@ export default function WelcomeScreen() {
       setToast(`Welcome, ${nickname}!`, 'success');
     } catch (err) {
       setToast('Failed to create player', 'error');
-      console.error(err);
+      console.error('Error:', err.message, err.response?.data);
     } finally {
       setLoading(false);
     }
