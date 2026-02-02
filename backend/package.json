@@ -1,0 +1,21 @@
+{
+  "name": "cribbage-backend",
+  "version": "1.0.0",
+  "description": "Cribbage multiplayer game backend",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "pg": "^8.10.0",
+    "socket.io": "^4.6.1",
+    "uuid": "^9.0.0"
+  }
+}

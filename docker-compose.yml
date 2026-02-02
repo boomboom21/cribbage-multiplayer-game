@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: cribbage-postgres
+    environment:
+      POSTGRES_USER: cribbage
+      POSTGRES_PASSWORD: cribbage_dev_password
+      POSTGRES_DB: cribbage_game
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cribbage"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: cribbage-backend
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgres://cribbage:cribbage_dev_password@postgres:5432/cribbage_game
+      PORT: 3002
+      FRONTEND_URL: http://localhost:5174
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npm run dev
+
+  frontend:
+    build: ./frontend
+    container_name: cribbage-frontend
+    environment:
+      VITE_API_URL: http://localhost:3002
+    ports:
+      - "5174:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    command: npm run dev
+
+volumes:
+  postgres_data:

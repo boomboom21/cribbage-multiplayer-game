@@ -1,0 +1,60 @@
+{
+  "name": "Cribbage Multiplayer Game",
+  "version": "1.0.0",
+  "description": "A polished multiplayer cribbage game prototype",
+  "tech_stack": ["React", "Vite", "Node.js", "Express", "PostgreSQL", "Socket.IO", "Phaser 3"],
+  "structure": {
+    "backend": {
+      "entry": "src/index.js",
+      "models": "src/models/",
+      "game_logic": "src/game/",
+      "database": "src/db.js"
+    },
+    "frontend": {
+      "entry": "src/main.jsx",
+      "screens": "src/screens/",
+      "components": "src/components/",
+      "scenes": "src/scenes/",
+      "store": "src/store/"
+    },
+    "database": {
+      "schema": "db/migrations/001_init_schema.sql"
+    }
+  },
+  "api": {
+    "base_url": "http://localhost:3001",
+    "endpoints": {
+      "players": "/api/players",
+      "games": "/api/games",
+      "health": "/api/health"
+    }
+  },
+  "socket_events": {
+    "client_to_server": [
+      "join_game",
+      "play_card",
+      "peg_move"
+    ],
+    "server_to_client": [
+      "game_state",
+      "card_played",
+      "peg_moved",
+      "peg_move_invalid",
+      "game_finished",
+      "turn_changed",
+      "error"
+    ]
+  },
+  "game_rules": {
+    "winning_score": 121,
+    "hand_size": 6,
+    "discard_count": 2,
+    "scoring": {
+      "fifteens": 2,
+      "pairs": 2,
+      "runs": "variable",
+      "flush": "4-5",
+      "nibs": 1
+    }
+  }
+}
