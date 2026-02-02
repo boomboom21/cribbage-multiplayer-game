@@ -19,7 +19,8 @@ export default function WelcomeScreen() {
 
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:3001/api/players', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+      const res = await axios.post(`${apiUrl}/api/players`, {
         nickname: nickname.trim(),
       });
       setPlayer(res.data);

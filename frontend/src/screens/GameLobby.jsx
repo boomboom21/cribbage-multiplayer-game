@@ -19,14 +19,15 @@ export default function GameLobby() {
   const handleCreateGame = async () => {
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:3001/api/games', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+      const res = await axios.post(`${apiUrl}/api/games`, {
         playerId: player.id,
       });
       setGameCode(res.data.game_code);
       setGame(res.data);
       
       // Connect socket
-      const socket = io('http://localhost:3001');
+      const socket = io(apiUrl);
       setSocket(socket);
       
       socket.emit('join_game', {
@@ -52,8 +53,9 @@ export default function GameLobby() {
 
     setLoading(true);
     try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3002';
       const res = await axios.post(
-        `http://localhost:3001/api/games/${joinCode.toUpperCase()}/join`,
+        `${apiUrl}/api/games/${joinCode.toUpperCase()}/join`,
         { playerId: player.id }
       );
       
@@ -61,7 +63,7 @@ export default function GameLobby() {
       setGame(res.data);
       
       // Connect socket
-      const socket = io('http://localhost:3001');
+      const socket = io(apiUrl);
       setSocket(socket);
       
       socket.emit('join_game', {
