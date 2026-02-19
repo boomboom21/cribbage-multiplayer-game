@@ -20,6 +20,8 @@ services:
   backend:
     build: ./backend
     container_name: cribbage-backend
+    ports:
+      - "3001:3002"
     environment:
       NODE_ENV: development
       DATABASE_URL: postgres://cribbage:cribbage_dev_password@postgres:5432/cribbage_game

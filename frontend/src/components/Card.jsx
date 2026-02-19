@@ -24,7 +24,7 @@ const RANKS = {
   K: 'K',
 };
 
-export default function Card({ suit, rank, value, onClick, selected, disabled }) {
+export default function Card({ suit, rank, value, onClick, selected, disabled, faceDown, className = '' }) {
   const handleClick = () => {
     if (!disabled && onClick) {
       onClick();
@@ -33,29 +33,38 @@ export default function Card({ suit, rank, value, onClick, selected, disabled })
 
   const suitSymbol = SUITS[suit] || suit;
   const isRed = suit === 'hearts' || suit === 'diamonds';
+  const colorClass = isRed ? 'red' : 'black';
+
+  if (faceDown) {
+    return (
+      <div 
+        className={`${styles.card} ${styles.faceDown} ${className}`}
+        onClick={handleClick}
+      />
+    );
+  }
 
   return (
     <div
-      className={`${styles.card} ${selected ? styles.selected : ''} ${disabled ? styles.disabled : ''}`}
+      className={`${styles.card} ${styles[colorClass]} ${selected ? styles.selected : ''} ${disabled ? styles.disabled : ''} ${className}`}
       onClick={handleClick}
-      style={{
-        color: isRed ? '#ef4444' : '#000',
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.5 : 1,
-      }}
     >
-      <div className={styles.top}>
-        <span className={styles.rank}>{RANKS[rank] || rank}</span>
-        <span className={styles.suit}>{suitSymbol}</span>
+      {/* Top left pip */}
+      <div className={styles.cardPip}>
+        <span className={styles.pipRank}>{RANKS[rank] || rank}</span>
+        <span className={styles.pipSuit}>{suitSymbol}</span>
       </div>
-      <div className={styles.center}>
-        <span className={styles.largeSuit}>{suitSymbol}</span>
+
+      {/* Center suit */}
+      <div className={styles.cardCenter}>
+        <span className={styles.centerSuit}>{suitSymbol}</span>
       </div>
-      <div className={styles.bottom}>
-        <span className={styles.suit}>{suitSymbol}</span>
-        <span className={styles.rank}>{RANKS[rank] || rank}</span>
+
+      {/* Bottom right pip (rotated) */}
+      <div className={`${styles.cardPip} ${styles.bottom}`}>
+        <span className={styles.pipRank}>{RANKS[rank] || rank}</span>
+        <span className={styles.pipSuit}>{suitSymbol}</span>
       </div>
-      <div className={styles.value}>{value}</div>
     </div>
   );
 }

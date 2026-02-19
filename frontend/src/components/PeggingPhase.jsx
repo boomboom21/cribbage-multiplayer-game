@@ -3,6 +3,13 @@ import useGameStore from '../store/gameStore';
 import CardHand from './CardHand';
 import styles from './PeggingPhase.module.css';
 
+const SUITS = {
+  hearts: '♥',
+  diamonds: '♦',
+  clubs: '♣',
+  spades: '♠',
+};
+
 export default function PeggingPhase() {
   const playerHand = useGameStore((s) => s.playerHand);
   const playedCards = useGameStore((s) => s.playedCards);
@@ -37,11 +44,14 @@ export default function PeggingPhase() {
         <div className={styles.playedCards}>
           <h3>Played Cards</h3>
           <div className={styles.cardsList}>
-            {playedCards.map((card, idx) => (
-              <span key={idx} className={styles.playedCard}>
-                {card.rank}
-              </span>
-            ))}
+            {playedCards.map((card, idx) => {
+              const suitSymbol = SUITS[card.suit] || card.suit;
+              return (
+                <span key={idx} className={styles.playedCard}>
+                  {card.rank}{suitSymbol}
+                </span>
+              );
+            })}
           </div>
         </div>
       )}
@@ -52,6 +62,7 @@ export default function PeggingPhase() {
           cards={playerHand}
           onSelect={isPlayerTurn ? handlePlayCard : undefined}
           disabled={!isPlayerTurn}
+          label="Your Hand"
         />
       </div>
 

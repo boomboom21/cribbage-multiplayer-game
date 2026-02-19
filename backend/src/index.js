@@ -154,10 +154,24 @@ app.get('/api/players/:uuid/stats', async (req, res) => {
 // Create a new game
 app.post('/api/games', strictLimiter, async (req, res) => {
   try {
-    const { playerId } = req.body;
-    if (!playerId || typeof playerId !== 'number') {
-      return res.status(400).json({ error: 'Valid player ID required' });
+    let { playerId } = req.body;
+    
+    // Accept either UUID or internal numeric ID
+    if (!playerId) {
+      return res.status(400).json({ error: 'Player ID required' });
     }
+    
+    // If it's a UUID (string), look up the internal player ID
+    if (typeof playerId === 'string' && playerId.length === 36) {
+      const player = await playersModel.getPlayerByUuid(playerId);
+      if (!player) {
+        return res.status(404).json({ error: 'Player not found' });
+      }
+      playerId = player.id;
+    } else if (typeof playerId !== 'number') {
+      return res.status(400).json({ error: 'Invalid player ID format' });
+    }
+    
     const game = await gamesModel.createGame(playerId);
     res.json(game);
   } catch (err) {
@@ -170,10 +184,22 @@ app.post('/api/games', strictLimiter, async (req, res) => {
 app.post('/api/games/:gameCode/join', strictLimiter, async (req, res) => {
   try {
     const gameCode = validateGameCode(req.params.gameCode);
-    const { playerId } = req.body;
+    let { playerId } = req.body;
     
-    if (!playerId || typeof playerId !== 'number') {
-      return res.status(400).json({ error: 'Valid player ID required' });
+    // Accept either UUID or internal numeric ID
+    if (!playerId) {
+      return res.status(400).json({ error: 'Player ID required' });
+    }
+    
+    // If it's a UUID (string), look up the internal player ID
+    if (typeof playerId === 'string' && playerId.length === 36) {
+      const player = await playersModel.getPlayerByUuid(playerId);
+      if (!player) {
+        return res.status(404).json({ error: 'Player not found' });
+      }
+      playerId = player.id;
+    } else if (typeof playerId !== 'number') {
+      return res.status(400).json({ error: 'Invalid player ID format' });
     }
     
     const game = await gamesModel.joinGame(gameCode, playerId);

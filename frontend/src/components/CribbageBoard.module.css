@@ -1,93 +1,331 @@
-.boardContainer {
+/* Premium Cribbage Board - Real Wood & Felt Style */
+.boardWrapper {
   display: flex;
   flex-direction: column;
   gap: 20px;
   padding: 20px;
-  background: #1a1a1a;
-  border-radius: 8px;
+  background: 
+    radial-gradient(ellipse at center, #0a2922 0%, #062319 50%, #031510 100%);
+  border-radius: 16px;
+  min-height: 500px;
+  position: relative;
 }
 
-.board {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  background: #2a2a2a;
-  padding: 20px;
-  border-radius: 8px;
+/* Felt texture overlay */
+.boardWrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+  pointer-events: none;
+  border-radius: 16px;
 }
 
-.trackRow {
+.boardWrapper > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Score headers */
+.scoreHeader {
   display: flex;
-  gap: 15px;
+  justify-content: space-between;
   align-items: center;
+  padding: 0 10px;
 }
 
-.playerLabel {
+.playerScoreBox {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 100px;
-  padding: 8px;
-  background: #1a1a1a;
-  border-radius: 6px;
-  border-left: 3px solid #f59e0b;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  background: linear-gradient(180deg, #2a1810 0%, #1a0f0a 100%);
+  border-radius: 12px;
+  border: 2px solid #4a3520;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
-.name {
-  font-weight: bold;
-  color: #f3f4f6;
-  font-size: 14px;
+.playerScoreBox.p1 {
+  border-left: 4px solid #d4a574;
 }
 
-.score {
+.playerScoreBox.p2 {
+  border-right: 4px solid #8b5a2b;
+  flex-direction: row-reverse;
+}
+
+.playerAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 20px;
   font-weight: bold;
-  color: #f59e0b;
 }
 
-.divider {
-  height: 2px;
-  background: #444;
-  margin: 10px 0;
+.playerScoreBox.p1 .playerAvatar {
+  background: linear-gradient(135deg, #e8d5b7 0%, #d4a574 100%);
+  color: #5a3d2b;
 }
 
-.phaseIndicator {
-  text-align: center;
-  padding: 12px;
-  background: #2a2a2a;
-  border-radius: 6px;
-  border-top: 2px solid #f59e0b;
+.playerScoreBox.p2 .playerAvatar {
+  background: linear-gradient(135deg, #8b6914 0%, #5a4a2a 100%);
+  color: #d4a574;
 }
 
-.phase {
-  color: #f59e0b;
-  font-weight: bold;
+.playerInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.playerScoreBox.p2 .playerInfo {
+  align-items: flex-end;
+}
+
+.playerName {
+  font-size: 12px;
+  color: #d4a574;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.playerPoints {
+  font-size: 28px;
+  font-weight: 800;
+  color: #fbbf24;
+  font-family: 'Georgia', serif;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+}
+
+.vsBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.vsText {
   font-size: 14px;
+  font-weight: 900;
+  color: #4a6b5a;
+  font-style: italic;
 }
 
+.gameCode {
+  font-size: 9px;
+  color: #3a5a4a;
+  letter-spacing: 1px;
+}
+
+/* The Cribbage Board */
+.cribbageBoard {
+  background: linear-gradient(180deg, #8B5A2B 0%, #6B4423 30%, #5C3A1E 70%, #4A2E17 100%);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+    0 0 0 4px #3d2817,
+    0 0 0 8px #2a1810;
+  position: relative;
+}
+
+/* Wood grain effect */
+.cribbageBoard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(139, 90, 43, 0.08) 1px,
+      transparent 2px,
+      transparent 30px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      rgba(0, 0, 0, 0.05) 1px,
+      transparent 2px,
+      transparent 10px
+    );
+  pointer-events: none;
+  border-radius: 12px;
+}
+
+/* Center divider between tracks */
+.trackDivider {
+  height: 8px;
+  background: linear-gradient(180deg, 
+    #3d2817 0%, 
+    #5a3d2b 20%, 
+    #3d2817 40%, 
+    #2a1810 60%, 
+    #3d2817 80%, 
+    #5a3d2b 100%);
+  margin: 16px 0;
+  border-radius: 4px;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Phase indicator */
+.phaseBar {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: linear-gradient(180deg, #1a2f28 0%, #0d1f1a 100%);
+  border-radius: 10px;
+  border: 1px solid #2a3f38;
+}
+
+.phaseStep {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #3a5a4a;
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.phaseStep.active {
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  color: #0d1f1a;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
+}
+
+.phaseStep.completed {
+  background: #1a3a2a;
+  color: #22c55e;
+}
+
+.phaseStep .stepNum {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.phaseStep.active .stepNum {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.phaseStep.completed .stepNum {
+  background: #22c55e;
+  color: #0d1f1a;
+}
+
+/* Turn indicator */
+.turnBanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: linear-gradient(180deg, #1e3a5f 0%, #172554 100%);
+  border-radius: 25px;
+  border: 2px solid #3b82f6;
+  margin-top: 8px;
+}
+
+.turnDot {
+  width: 10px;
+  height: 10px;
+  background: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #22c55e;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+/* Crib indicator */
+.cribIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(180deg, #3d2817 0%, #2a1810 100%);
+  border-radius: 8px;
+  border: 1px solid #5a3d2b;
+}
+
+.cribIcon {
+  font-size: 16px;
+}
+
+.cribCount {
+  font-size: 14px;
+  font-weight: bold;
+  color: #fbbf24;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .boardContainer {
+  .boardWrapper {
     padding: 12px;
   }
-
-  .board {
-    padding: 12px;
-  }
-
-  .trackRow {
+  
+  .scoreHeader {
+    flex-direction: column;
     gap: 10px;
   }
-
-  .playerLabel {
-    min-width: 80px;
-    padding: 6px;
+  
+  .playerScoreBox {
+    width: 100%;
+    justify-content: space-between;
   }
-
-  .name {
-    font-size: 12px;
+  
+  .playerScoreBox.p2 {
+    flex-direction: row;
   }
-
-  .score {
-    font-size: 18px;
+  
+  .playerScoreBox.p2 .playerInfo {
+    align-items: flex-start;
+  }
+  
+  .vsBox {
+    flex-direction: row;
+    gap: 20px;
+  }
+  
+  .phaseBar {
+    flex-wrap: wrap;
+  }
+  
+  .phaseStep {
+    padding: 4px 8px;
+    font-size: 9px;
   }
 }

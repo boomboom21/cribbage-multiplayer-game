@@ -3,6 +3,13 @@ import useGameStore from '../store/gameStore';
 import CardHand from './CardHand';
 import styles from './DiscardPhase.module.css';
 
+const SUITS = {
+  hearts: '♥',
+  diamonds: '♦',
+  clubs: '♣',
+  spades: '♠',
+};
+
 export default function DiscardPhase() {
   const playerHand = useGameStore((s) => s.playerHand);
   const selectedCardIndices = useGameStore((s) => s.selectedCardIndices);
@@ -40,6 +47,7 @@ export default function DiscardPhase() {
         cards={playerHand}
         selectedIndices={selectedCardIndices}
         onSelect={toggleCardSelection}
+        label="Your Hand"
       />
 
       <div className={styles.selectedDisplay}>
@@ -48,9 +56,10 @@ export default function DiscardPhase() {
           <div className={styles.selectedCards}>
             {selectedCardIndices.map((idx) => {
               const card = playerHand[idx];
+              const suitSymbol = SUITS[card.suit] || card.suit;
               return (
                 <span key={idx} className={styles.selectedCard}>
-                  {card.rank}♥
+                  {card.rank}{suitSymbol}
                 </span>
               );
             })}
