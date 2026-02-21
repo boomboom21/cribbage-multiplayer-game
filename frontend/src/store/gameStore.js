@@ -12,6 +12,7 @@ const useGameStore = create((set) => ({
   // Game phases
   gamePhase: 'welcome', // welcome, dealing, discard, pegging, counting, gameover
   playerHand: [], // 6 cards initially
+  opponentHand: [], // opponent's cards
   discardedCards: [], // 2 cards to crib
   cribCards: [], // 4 in crib
   playedCards: [], // cards played in pegging
@@ -40,6 +41,7 @@ const useGameStore = create((set) => ({
   // Game phase setters
   setGamePhase: (phase) => set({ gamePhase: phase }),
   setPlayerHand: (hand) => set({ playerHand: hand }),
+  setOpponentHand: (hand) => set({ opponentHand: hand }),
   toggleCardSelection: (index) => set((state) => {
     const selected = [...state.selectedCardIndices];
     const idx = selected.indexOf(index);

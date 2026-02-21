@@ -121,7 +121,6 @@ export default function GameBoard() {
 
       <div className={styles.gameArea}>
         <CribbageBoard />
-        <GamePhaseRenderer />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { test as base, expect } from '@playwright/test';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3002';
+const API_URL = 'http://localhost:3001';
 
 export const test = base.extend({
   // Backend API helper

@@ -3,111 +3,137 @@ import useGameStore from '../store/gameStore';
 import PegTrack from './PegTrack';
 import styles from './CribbageBoard.module.css';
 
-const PHASES = [
-  { id: 'dealing', label: 'Deal', icon: '🎴' },
-  { id: 'discard', label: 'Discard', icon: '✂️' },
-  { id: 'pegging', label: 'Peg', icon: '🎯' },
-  { id: 'counting', label: 'Count', icon: '🧮' },
+const SUITS = {
+  hearts: { symbol: '♥️', color: '#ef4444' },
+  diamonds: { symbol: '♦️', color: '#ef4444' },
+  spades: { symbol: '♠️', color: '#1a1a1a' },
+  clubs: { symbol: '♣️', color: '#1a1a1a' },
+};
+
+// Placeholder cards to show when no game is active
+const PLACEHOLDER_HAND = [
+  { rank: 'A', suit: 'spades' },
+  { rank: 'K', suit: 'hearts' },
+  { rank: 'Q', suit: 'clubs' },
+  { rank: 'J', suit: 'diamonds' },
+  { rank: '10', suit: 'spades' },
+  { rank: '9', suit: 'hearts' },
 ];
 
-export default function CribbageBoard() {
-  const p1Nickname = useGameStore((s) => s.p1Nickname);
-  const p2Nickname = useGameStore((s) => s.p2Nickname);
-  const p1Score = useGameStore((s) => s.p1Score);
-  const p2Score = useGameStore((s) => s.p2Score);
-  const p1PegPosition = useGameStore((s) => s.p1PegPosition);
-  const p2PegPosition = useGameStore((s) => s.p2PegPosition);
-  const p1PrevPosition = useGameStore((s) => s.p1PrevPosition || 0);
-  const p2PrevPosition = useGameStore((s) => s.p2PrevPosition || 0);
-  const gamePhase = useGameStore((s) => s.gamePhase);
-  const currentTurn = useGameStore((s) => s.currentTurn);
-  const player = useGameStore((s) => s.player);
-  const gameCode = useGameStore((s) => s.gameCode);
-  const cribCards = useGameStore((s) => s.cribCards);
+const PlayingCard = ({ card, faceDown, onClick, selected }) => {
+  if (faceDown) {
+    return (
+      <div className={styles.cardBack}>
+        <div className={styles.cardInner}>🎴</div>
+      </div>
+    );
+  }
 
-  // Determine whose turn it is
-  const currentPlayerUuid = player?.uuid;
-  const isMyTurn = currentTurn === currentPlayerUuid;
-  
-  // Get current phase index
-  const currentPhaseIndex = PHASES.findIndex(p => p.id === gamePhase);
-  
-  // Get crib card count
-  const cribCount = cribCards?.length || 0;
+  const { symbol, color } = SUITS[card.suit.toLowerCase()] || { symbol: card.suit, color: '#000' };
 
   return (
-    <div className={styles.boardWrapper}>
-      {/* Score Headers */}
-      <div className={styles.scoreHeader}>
-        <div className={`${styles.playerScoreBox} ${styles.p1}`}>
-          <div className={styles.playerAvatar}>P1</div>
-          <div className={styles.playerInfo}>
-            <span className={styles.playerName}>{p1Nickname || 'Player 1'}</span>
-            <span className={styles.playerPoints}>{p1Score}</span>
-          </div>
-        </div>
-        
-        <div className={styles.vsBox}>
-          <span className={styles.vsText}>VS</span>
-          {gameCode && <span className={styles.gameCode}>Game: {gameCode}</span>}
-        </div>
-        
-        <div className={`${styles.playerScoreBox} ${styles.p2}`}>
-          <div className={styles.playerAvatar}>P2</div>
-          <div className={styles.playerInfo}>
-            <span className={styles.playerName}>{p2Nickname || 'Player 2'}</span>
-            <span className={styles.playerPoints}>{p2Score}</span>
-          </div>
-        </div>
+    <div 
+      className={`${styles.card} ${selected ? styles.selected : ''}`} 
+      onClick={onClick}
+      style={{ color }}
+    >
+      <div className={styles.cardCornerTop}>
+        <div className={styles.cardRank}>{card.rank}</div>
+        <div className={styles.cardSuitSmall}>{symbol}</div>
       </div>
+      <div className={styles.cardCenter}>{symbol}</div>
+      <div className={styles.cardCornerBottom}>
+        <div className={styles.cardRank}>{card.rank}</div>
+        <div className={styles.cardSuitSmall}>{symbol}</div>
+      </div>
+    </div>
+  );
+};
 
-      {/* The Cribbage Board */}
-      <div className={styles.cribbageBoard}>
-        <PegTrack
-          p1CurrentPosition={p1PegPosition}
-          p1PreviousPosition={p1PrevPosition}
-          p2CurrentPosition={p2PegPosition}
-          p2PreviousPosition={p2PrevPosition}
+export default function CribbageBoard() {
+  const {
+    p1Score, p1PegPosition, p2Score, p2PegPosition,
+    playerHand, opponentHand, gamePhase, currentTurn,
+    playedCards, cribCards, toggleCardSelection, selectedCardIndices,
+    p1Nickname, p2Nickname
+  } = useGameStore();
+
+  // Use placeholder cards when hands are empty (no game started yet)
+  const displayOpponentHand = opponentHand.length > 0 ? opponentHand : PLACEHOLDER_HAND;
+  const displayPlayerHand = playerHand.length > 0 ? playerHand : PLACEHOLDER_HAND;
+
+  return (
+    <div className={styles.container}>
+      {/* Board Section */}
+      <div className={styles.boardSection}>
+        <PegTrack 
+          p1={p1PegPosition} 
+          p1b={Math.max(0, p1PegPosition - 1)}
+          p2={p2PegPosition} 
+          p2b={Math.max(0, p2PegPosition - 1)} 
         />
       </div>
 
-      {/* Crib Indicator */}
-      {cribCount > 0 && (
-        <div className={styles.cribIndicator}>
-          <span className={styles.cribIcon}>📦</span>
-          <span>Crib: <span className={styles.cribCount}>{cribCount}</span> cards</span>
+      {/* Card Play Area */}
+      <div className={styles.playArea}>
+        {/* Opponent Hand */}
+        <div className={styles.opponentSection}>
+          <div className={styles.sectionLabel}>
+            {p2Nickname || 'Opponent'}'s Hand 
+            {opponentHand.length === 0 && <span className={styles.waitingLabel}> (waiting)</span>}
+          </div>
+          <div className={styles.hand}>
+            {displayOpponentHand.map((c, i) => (
+              <PlayingCard key={i} card={c} faceDown={opponentHand.length === 0 || true} />
+            ))}
+          </div>
         </div>
-      )}
 
-      {/* Turn Banner */}
-      {gamePhase === 'pegging' && (
-        <div className={styles.turnBanner}>
-          <span className={styles.turnDot}></span>
-          <span style={{ color: '#93c5fd', fontWeight: 600 }}>
-            {isMyTurn ? "Your Turn!" : `${p2Nickname || 'Opponent'}'s Turn`}
-          </span>
-        </div>
-      )}
-
-      {/* Phase Indicator */}
-      <div className={styles.phaseBar}>
-        {PHASES.map((phase, index) => {
-          let status = '';
-          if (gamePhase === phase.id) status = 'active';
-          else if (index < currentPhaseIndex) status = 'completed';
-          
-          return (
-            <div key={phase.id} className={`${styles.phaseStep} ${styles[status]}`}>
-              <span className={styles.stepNum}>{index + 1}</span>
-              <span>{phase.icon}</span>
-              <span>{phase.label}</span>
+        {/* Center: Crib and Play Pile */}
+        <div className={styles.centerSection}>
+          <div className={styles.pileContainer}>
+            <div className={styles.sectionLabel}>Play Area</div>
+            <div className={styles.playPile}>
+              {playedCards.length > 0 ? (
+                playedCards.map((c, i) => (
+                  <div key={i} className={styles.stackedCard}>
+                    <PlayingCard card={c} />
+                  </div>
+                ))
+              ) : (
+                <div className={styles.emptySlot}>—</div>
+              )}
             </div>
-          );
-        })}
-        <div className={`${styles.phaseStep} ${gamePhase === 'gameover' ? styles.active : ''}`}>
-          <span className={styles.stepNum}>5</span>
-          <span>🏆</span>
-          <span>End</span>
+          </div>
+          <div className={styles.pileContainer}>
+            <div className={styles.sectionLabel}>Crib</div>
+            <div className={styles.cribPile}>
+              {cribCards.length > 0 ? (
+                <PlayingCard card={cribCards[0]} faceDown={true} />
+              ) : (
+                <div className={styles.emptySlot}>CRIB</div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Player Hand */}
+        <div className={styles.playerSection}>
+          <div className={styles.sectionLabel}>
+            Your Hand 
+            {gamePhase === 'discard' && '(Select 2 to Discard)'}
+            {playerHand.length === 0 && <span className={styles.waitingLabel}> (waiting for deal)</span>}
+          </div>
+          <div className={styles.hand}>
+            {displayPlayerHand.map((c, i) => (
+              <PlayingCard 
+                key={i} 
+                card={c} 
+                selected={selectedCardIndices.includes(i)}
+                onClick={() => playerHand.length > 0 ? toggleCardSelection(i) : undefined}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
